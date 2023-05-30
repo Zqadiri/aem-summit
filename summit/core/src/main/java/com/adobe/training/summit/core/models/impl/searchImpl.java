@@ -1,28 +1,32 @@
 package com.adobe.training.summit.core.models.impl;
 import java.util.List;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.inject.Inject;
-
+import javax.jcr.Session;
+import com.day.cq.search.result.SearchResult;
 import java.util.ArrayList;
-import java.util.Collections;
+import org.slf4j.Logger;
+import com.day.cq.wcm.api.Page;
+import org.slf4j.LoggerFactory;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.ResourceResolver;
 import org.apache.sling.models.annotations.Default;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
 import com.adobe.training.summit.core.models.Search;
-
+import com.day.cq.search.PredicateGroup;
+import com.day.cq.search.Query;
+import com.day.cq.search.result.Hit;
+import com.day.cq.search.QueryBuilder;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 
-@Model(
-    adaptables = { SlingHttpServletRequest.class }, 
-    adapters = { Search.class }, 
-    resourceType = {searchImpl.RESOURCE_TYPE }, 
-    defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL
-)
+@Model(adaptables = { SlingHttpServletRequest.class }, adapters = { Search.class }, resourceType = {
+        searchImpl.RESOURCE_TYPE }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class searchImpl implements Search {
-    // private static final Logger LOG = LoggerFactory.getLogger(AuthorImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(searchImpl.class);
     protected static final String RESOURCE_TYPE = "summit/components/searchComponent";
 
     @Self
@@ -39,21 +43,60 @@ public class searchImpl implements Search {
     private List<String> pages;
 
     @Override
-    public String getPname(){
+    public String getPname() {
         pname = req.getParameter("pname");
         return pname;
     }
 
+    public Map<String,String> createTextSearchQuery(){
+        Map<String,String> queryMap=new HashMap<>();
+        queryMap.put("path","/content/summit");
+        queryMap.put("type","cq:Page");
+        // queryMap.put("fulltext", pname);
+        return queryMap;
+    }
+
     @Override
     public List<String> getPages() {
-        // if (pages != null) {
-            pages = new ArrayList<>();
-            pages.add("A");
-            pages.add("E");
-            pages.add("U");
-            return pages;
-        // } else {
-        //     return Collections.emptyList();
-        // }
+        LOG.info("\n ----SEARCH RESULT--------");
+
+        ResourceResolver resolver = req.getResourceResolver();
+        QueryBuilder builder = resolver.adaptTo(QueryBuilder.class);
+        Session session = resolver.adaptTo(Session.class);
+
+        pages = new ArrayList<>();
+
+        try 
+        {
+            Query query = builder.createQuery(PredicateGroup.create(createTextSearchQuery()), session);
+            SearchResult result = query.getResult();
+
+            int perPageResults = result.getHits().size();
+            long totalResults = result.getTotalMatches();
+            long startingResult = result.getStartIndex();
+
+            pages.add("perpageresult : " + perPageResults);
+            pages.add("totalresults : " + totalResults);
+            pages.add("startingresult : " + startingResult);
+
+            List<Hit> hits = result.getHits();
+
+            // iterating over the results
+            for(Hit hit: hits){
+                Page page = hit.getResource().adaptTo(Page.class);
+                pages.add("\n title : " + page.getTitle());
+                pages.add("path : " + page.getPath());
+                pages.add("Template : " + page.getTemplate());
+                pages.add("\n");
+                LOG.info("\n Page {} ",page.getPath());
+            }
+        }
+        catch (Exception e)
+        {
+            LOG.info("\n ----ERROR -----{} ",e.getMessage());
+        }
+        return pages;
     }
+
+
 }

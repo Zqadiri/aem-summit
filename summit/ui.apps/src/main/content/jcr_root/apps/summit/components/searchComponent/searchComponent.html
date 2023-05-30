@@ -1,11 +1,11 @@
-<html>
-    <head><title>Welcome to AEM Tutorials </title></head>
-<body>
-    <h2>Here is the Text</h2>
-    <form action="/bin/pages" method="get" >
-        <label for="name">Page name:</label><br>
-        <input type="text" id="pname" name="pname"><br>
-        <input type="submit" value="Submit">
+<div>
+    <form action="${currentPage.path @ extension='html'}" method="get" name="form">
+        <label for="name">Page name:</label>
+        <input type="text" id="pname" name="pname"/>
+        <button type="submit">Search</button>
     </form>
-</body>
-</html>
+
+    <div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
+    <div>Pages : ${model.pages @ join='\n'}</div>
+    <div>req : ${model.pname}</div>
+</div> 

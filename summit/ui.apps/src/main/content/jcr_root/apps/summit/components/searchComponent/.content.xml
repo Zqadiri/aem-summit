@@ -3,5 +3,4 @@
     jcr:primaryType="cq:Component"
     jcr:title="searchComponent"
     sling:hideResource="{Boolean}true"
-    componentGroup="SUMMIT - Content"
-    />
+    componentGroup="SUMMIT - Content"/>
