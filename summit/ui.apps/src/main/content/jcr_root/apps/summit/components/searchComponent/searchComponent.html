@@ -6,6 +6,7 @@
     </form>
 
     <div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
-    <div>Pages : ${model.pages @ join='\n'}</div>
-    <div>req : ${model.pname}</div>
+    <div>
+        ${model.pages @ join="\n"}
+    </div>
 </div> 

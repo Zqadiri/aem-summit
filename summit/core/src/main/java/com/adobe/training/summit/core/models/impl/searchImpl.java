@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.jcr.Session;
+import javax.servlet.RequestDispatcher;
 import com.day.cq.search.result.SearchResult;
 import java.util.ArrayList;
 import org.slf4j.Logger;
@@ -73,11 +74,9 @@ public class searchImpl implements Search {
 
             int perPageResults = result.getHits().size();
             long totalResults = result.getTotalMatches();
-            long startingResult = result.getStartIndex();
 
-            pages.add("perpageresult : " + perPageResults);
-            pages.add("totalresults : " + totalResults);
-            pages.add("startingresult : " + startingResult);
+            pages.add("per page result : " + perPageResults);
+            pages.add("total results : " + totalResults);
 
             List<Hit> hits = result.getHits();
 
@@ -85,11 +84,14 @@ public class searchImpl implements Search {
             for(Hit hit: hits){
                 Page page = hit.getResource().adaptTo(Page.class);
                 pages.add("\n title : " + page.getTitle());
-                pages.add("path : " + page.getPath());
-                pages.add("Template : " + page.getTemplate());
-                pages.add("\n");
+                pages.add("Url? : " + page.getVanityUrl());
+                pages.add("Date? : " + page.getLastModified());
+                pages.add("\n\n    ");
                 LOG.info("\n Page {} ",page.getPath());
             }
+
+            // RequestDispatcher requestDispatcher = req.getRequestDispatcher("/bin/pages") ;
+            // requestDispatcher.forward(req, res) ;
         }
         catch (Exception e)
         {
