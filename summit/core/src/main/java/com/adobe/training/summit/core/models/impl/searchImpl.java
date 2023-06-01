@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.jcr.Session;
-import javax.servlet.RequestDispatcher;
 import com.day.cq.search.result.SearchResult;
 import java.util.ArrayList;
 import org.slf4j.Logger;
@@ -67,38 +66,30 @@ public class searchImpl implements Search {
 
         pages = new ArrayList<>();
 
-        try 
-        {
+        try {
             Query query = builder.createQuery(PredicateGroup.create(createTextSearchQuery()), session);
             SearchResult result = query.getResult();
 
             int perPageResults = result.getHits().size();
             long totalResults = result.getTotalMatches();
 
-            pages.add("per page result : " + perPageResults);
-            pages.add("total results : " + totalResults);
+            pages.add("per page result : " + perPageResults + "\n" );
+            pages.add("      total results : " + totalResults + "\n");
 
             List<Hit> hits = result.getHits();
 
             // iterating over the results
             for(Hit hit: hits){
                 Page page = hit.getResource().adaptTo(Page.class);
-                pages.add("\n title : " + page.getTitle());
-                pages.add("Url? : " + page.getVanityUrl());
-                pages.add("Date? : " + page.getLastModified());
-                pages.add("\n\n    ");
+                pages.add("Title    :   " + page.getTitle() + "\n");
+                pages.add("Path     :   " + page.getPath() + "\n");
+                // pages.add("Date     :   " + page.getLastModified().toString() + "\n");
                 LOG.info("\n Page {} ",page.getPath());
             }
-
-            // RequestDispatcher requestDispatcher = req.getRequestDispatcher("/bin/pages") ;
-            // requestDispatcher.forward(req, res) ;
         }
-        catch (Exception e)
-        {
+        catch (Exception e){
             LOG.info("\n ----ERROR -----{} ",e.getMessage());
         }
         return pages;
     }
-
-
 }

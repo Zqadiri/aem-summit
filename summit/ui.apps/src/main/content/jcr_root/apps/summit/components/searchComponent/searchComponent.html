@@ -1,12 +1,48 @@
-<div>
-    <form action="${currentPage.path @ extension='html'}" method="get" name="form">
-        <label for="name">Page name:</label>
-        <input type="text" id="pname" name="pname"/>
-        <button type="submit">Search</button>
-    </form>
+<!DOCTYPE html>
+<html lang="en">
 
-    <div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
-    <div>
-        ${model.pages @ join="\n"}
-    </div>
-</div> 
+<head>
+</head>
+
+<body>
+	<div>
+		<form action="${currentPage.path @ extension='html'}" method="get" name="form">
+			<label for="name">Page name:</label>
+			<input type="text" id="pname" name="pname" />
+			<button type="submit">Search</button>
+		</form>
+		<div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
+		<div>
+			${model.pages @ join=' \n '}
+		</div>
+		<p id="result"></p>
+		<input type="button" onclick="myFetcher()" value="Go to Google" />
+		<script type="text/javascript">
+			async function myFetcher() {
+				await fetch('http://localhost:4502/content/summit/us/home/search.api.getDescription.html?test=test')
+				.then(
+					function (response) {
+						if (response.status !== 200) {
+							console.log('Looks like there was a problem. Status Code: ' +
+								response.status);
+							return;
+						}
+						response.text().then(function (data) {
+							console.log("data:  " + data);
+							var div = document.getElementById('result');
+							div.innerHTML = data;
+						});
+					}
+				)
+				.catch(function (err) {
+					console.log('Fetch Error :-S', err);
+				})
+			}
+		</script>
+	</div>
+</body>
+
+</html>
+
+
+				
