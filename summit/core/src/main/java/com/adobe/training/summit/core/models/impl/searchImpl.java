@@ -1,4 +1,5 @@
 package com.adobe.training.summit.core.models.impl;
+
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,10 +49,10 @@ public class searchImpl implements Search {
         return pname;
     }
 
-    public Map<String,String> createTextSearchQuery(){
-        Map<String,String> queryMap=new HashMap<>();
-        queryMap.put("path","/content/summit");
-        queryMap.put("type","cq:Page");
+    public Map<String, String> createTextSearchQuery() {
+        Map<String, String> queryMap = new HashMap<>();
+        queryMap.put("path", "/content/summit");
+        queryMap.put("type", "cq:Page");
         // queryMap.put("fulltext", pname);
         return queryMap;
     }
@@ -73,23 +74,56 @@ public class searchImpl implements Search {
             int perPageResults = result.getHits().size();
             long totalResults = result.getTotalMatches();
 
-            pages.add("per page result : " + perPageResults + "\n" );
+            pages.add("per page result : " + perPageResults + "\n");
             pages.add("      total results : " + totalResults + "\n");
 
             List<Hit> hits = result.getHits();
 
             // iterating over the results
-            for(Hit hit: hits){
+            for (Hit hit : hits) {
                 Page page = hit.getResource().adaptTo(Page.class);
                 pages.add("Title    :   " + page.getTitle() + "\n");
                 pages.add("Path     :   " + page.getPath() + "\n");
-                // pages.add("Date     :   " + page.getLastModified().toString() + "\n");
-                LOG.info("\n Page {} ",page.getPath());
+                // pages.add("Date : " + page.getLastModified().toString() + "\n");
+                LOG.info("\n Page {} ", page.getPath());
             }
-        }
-        catch (Exception e){
-            LOG.info("\n ----ERROR -----{} ",e.getMessage());
+        } catch (Exception e) {
+            LOG.info("\n ----ERROR -----{} ", e.getMessage());
         }
         return pages;
+    }
+
+    @Override
+    public List<Map<String, String>> getPageDetailsWithMap() {
+        ResourceResolver resolver = req.getResourceResolver();
+        QueryBuilder builder = resolver.adaptTo(QueryBuilder.class);
+        Session session = resolver.adaptTo(Session.class);
+        List<Map<String, String>> pageDetailsMap = new ArrayList<>();
+
+        try {
+            Query query = builder.createQuery(PredicateGroup.create(createTextSearchQuery()), session);
+            SearchResult result = query.getResult();
+
+            int perPageResults = result.getHits().size();
+            long totalResults = result.getTotalMatches();
+            List<Hit> hits = result.getHits();
+
+            // iterating over the results
+            for (Hit hit : hits) {
+                Map<String, String> bookMap = new HashMap<>();
+                Page page = hit.getResource().adaptTo(Page.class);
+                // pages.add("Title : " + page.getTitle() + "\n");
+                // pages.add("Path : " + page.getPath() + "\n");
+                // // pages.add("Date : " + page.getLastModified().toString() + "\n");
+                // LOG.info("\n Page {} ",page.getPath());
+                bookMap.put("title", "bookname");
+                bookMap.put("path", "booksubject");
+                bookMap.put("date", "publishyear");
+                pageDetailsMap.add(bookMap);
+            }
+        } catch (Exception e) {
+            LOG.info("\n ----ERROR -----{} ", e.getMessage());
+        }
+        return pageDetailsMap;
     }
 }

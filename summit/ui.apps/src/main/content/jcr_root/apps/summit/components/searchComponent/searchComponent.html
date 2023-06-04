@@ -12,8 +12,11 @@
 			<button type="submit">Search</button>
 		</form>
 		<div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
-		<div>
-			${model.pages @ join=' \n '}
+		<div data-sly-list.item="${model.pageDetailsWithMap}">
+			---------------Book : ${itemList.count}--------------
+			<p> Book : <b>${item.title} </b></p>
+			<p> Subject : <b>${item.path}</b> </p>
+			<p> Publish : <b>${item.date}</b> </p>
 		</div>
 		<p id="result"></p>
 		<input type="button" onclick="myFetcher()" value="Go to Google" />
