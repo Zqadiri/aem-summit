@@ -13,10 +13,10 @@
 		</form>
 		<div data-sly-use.model="com.adobe.training.summit.core.models.Search"></div>
 		<div data-sly-list.item="${model.pageDetailsWithMap}">
-			---------------Book : ${itemList.count}--------------
-			<p> Book : <b>${item.title} </b></p>
-			<p> Subject : <b>${item.path}</b> </p>
-			<p> Publish : <b>${item.date}</b> </p>
+			---------------Pages N: ${itemList.count}--------------
+			<p> Title : <b>${item.title} </b></p>
+			<p> Path : <b>${item.path}</b> </p>
+			<p> Mod Date : <b>${item.date}</b> </p>
 		</div>
 		<p id="result"></p>
 		<input type="button" onclick="myFetcher()" value="Go to Google" />

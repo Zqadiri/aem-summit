@@ -112,13 +112,10 @@ public class searchImpl implements Search {
             for (Hit hit : hits) {
                 Map<String, String> bookMap = new HashMap<>();
                 Page page = hit.getResource().adaptTo(Page.class);
-                // pages.add("Title : " + page.getTitle() + "\n");
-                // pages.add("Path : " + page.getPath() + "\n");
-                // // pages.add("Date : " + page.getLastModified().toString() + "\n");
-                // LOG.info("\n Page {} ",page.getPath());
-                bookMap.put("title", "bookname");
-                bookMap.put("path", "booksubject");
-                bookMap.put("date", "publishyear");
+                bookMap.put("title", page.getTitle());
+                bookMap.put("path", page.getPath());
+                bookMap.put("date", page.getLastModified().toString());
+                LOG.info("\n Page {} ", page.getPath());
                 pageDetailsMap.add(bookMap);
             }
         } catch (Exception e) {
@@ -126,4 +123,5 @@ public class searchImpl implements Search {
         }
         return pageDetailsMap;
     }
+
 }
